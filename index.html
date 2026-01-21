@@ -1,0 +1,845 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>风险偏好测试</title>
+  <style>
+    :root{
+      --bg: #0b1020;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.09);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.66);
+      --border: rgba(255,255,255,.12);
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --radius: 18px;
+      --ring: 0 0 0 3px rgba(255,255,255,.12);
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "PingFang SC","Noto Sans CJK SC","Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 20% -10%, rgba(108,92,231,.35), transparent 55%),
+        radial-gradient(900px 500px at 95% 10%, rgba(0,184,148,.25), transparent 52%),
+        radial-gradient(900px 600px at 30% 105%, rgba(9,132,227,.25), transparent 55%),
+        var(--bg);
+      min-height:100vh;
+    }
+    a{ color: inherit; }
+    .wrap{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 18px 56px;
+    }
+    header{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+      margin-bottom: 18px;
+    }
+    .title{
+      display:flex; flex-direction:column; gap:6px;
+    }
+    h1{
+      margin:0;
+      font-size: clamp(22px, 3vw, 34px);
+      letter-spacing: .2px;
+    }
+    .subtitle{
+      margin:0;
+      color: var(--muted);
+      line-height:1.5;
+      max-width: 70ch;
+      font-size: 14px;
+    }
+    .pillbar{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .pill{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.05);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:12px;
+      color: var(--muted);
+      backdrop-filter: blur(10px);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 16px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(12px);
+    }
+    .cardHeader{
+      padding: 18px 18px 14px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .cardHeader h2{
+      margin:0;
+      font-size: 16px;
+      letter-spacing:.2px;
+    }
+    .cardHeader p{
+      margin:6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height:1.6;
+    }
+    .cardBody{ padding: 14px 18px 18px; }
+
+    .progressWrap{
+      display:flex; flex-direction:column; gap:8px;
+      min-width: 230px;
+      flex:1;
+      align-items:flex-end;
+    }
+    .progressText{
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .progress{
+      width: 100%;
+      max-width: 360px;
+      height: 10px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      overflow:hidden;
+    }
+    .bar{
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(0,184,148,.9), rgba(9,132,227,.9), rgba(108,92,231,.9));
+      border-radius: 999px;
+      transition: width .35s ease;
+    }
+
+    .section{
+      display:flex; flex-direction:column; gap: 12px;
+      margin-bottom: 18px;
+    }
+    .sectionTitle{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255,255,255,.04);
+    }
+    .sectionTitle strong{ font-size: 13px; }
+    .sectionTitle span{
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .q{
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255,255,255,.04);
+      padding: 14px 12px 12px;
+    }
+    .qTop{
+      display:flex; gap:10px; align-items:flex-start;
+      margin-bottom: 10px;
+    }
+    .qNo{
+      width: 28px; height: 28px;
+      border-radius: 9px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      font-weight: 700;
+      font-size: 13px;
+      flex: 0 0 auto;
+    }
+    .qTitle{
+      margin: 2px 0 0;
+      font-size: 14px;
+      line-height: 1.5;
+      letter-spacing: .1px;
+    }
+
+    .opts{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 560px){
+      .opts{ grid-template-columns: 1fr; }
+    }
+    .opt{
+      position:relative;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      border-radius: 14px;
+      padding: 10px 10px 10px 38px;
+      cursor:pointer;
+      transition: transform .05s ease, background .2s ease, border-color .2s ease;
+      user-select:none;
+      min-height: 44px;
+      display:flex;
+      align-items:center;
+    }
+    .opt:hover{
+      background: rgba(255,255,255,.06);
+      border-color: rgba(255,255,255,.18);
+    }
+    .opt:active{ transform: scale(.995); }
+    .opt input{
+      position:absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px; height: 16px;
+      accent-color: #ffffff;
+    }
+    .opt small{
+      color: var(--muted);
+      margin-left: 8px;
+      font-size: 12px;
+    }
+
+    .actions{
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      margin-top: 12px;
+    }
+    button{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding: 11px 14px;
+      border-radius: 14px;
+      font-weight: 650;
+      letter-spacing:.2px;
+      cursor:pointer;
+      transition: background .2s ease, border-color .2s ease, transform .05s ease;
+    }
+    button:hover{ background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.2); }
+    button:active{ transform: scale(.995); }
+    .primary{
+      background: linear-gradient(90deg, rgba(0,184,148,.85), rgba(9,132,227,.85), rgba(108,92,231,.85));
+      border-color: rgba(255,255,255,.18);
+    }
+    .primary:hover{ filter: brightness(1.05); }
+    .ghost{
+      background: transparent;
+    }
+
+    .asideBox{
+      padding: 16px 16px 18px;
+    }
+    .hint{
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .result{
+      display:none;
+      margin-top: 12px;
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+    .resultGrid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .metric{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      border-radius: 16px;
+      padding: 12px;
+    }
+    .metricTop{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      margin-bottom: 8px;
+    }
+    .metric h3{
+      margin:0;
+      font-size: 14px;
+    }
+    .badge{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .metric p{
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height:1.7;
+    }
+    .scoreLine{
+      margin-top: 10px;
+      display:flex; gap: 10px; align-items:center; flex-wrap:wrap;
+    }
+    .bigScore{
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: .3px;
+    }
+    .range{
+      font-size: 12px;
+      color: var(--muted);
+      border: 1px dashed rgba(255,255,255,.22);
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+
+    .toast{
+      display:none;
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 200, 0, .25);
+      background: rgba(255, 200, 0, .09);
+      color: rgba(255,255,255,.9);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    footer{
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+      text-align:center;
+      opacity:.9;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>风险偏好测试</h1>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- Left: Form -->
+      <div class="card">
+        <div class="cardHeader">
+          <div>
+            <h2>问卷</h2>
+            <p>请按直觉作答；没有“标准答案”。</p>
+          </div>
+          <div class="progressWrap">
+            <div class="progressText" id="progressText">已完成 0 / 18</div>
+            <div class="progress" aria-label="progress">
+              <div class="bar" id="progressBar"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cardBody">
+          <form id="quizForm">
+            <div class="section" id="secPref"></div>
+            <div class="section" id="secCap"></div>
+
+            <div class="toast" id="toast"></div>
+
+            <div class="actions">
+              <button type="submit" class="primary">提交并计算结果</button>
+              <button type="button" class="ghost" id="btnReset">重置</button>
+              <button type="button" id="btnScrollResult" style="display:none;">跳到结果</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right: Result -->
+      <div class="card">
+        <div class="cardHeader">
+          <div>
+            <h2>测评结果</h2>
+            <p>提交后自动显示分数与类型结论。</p>
+          </div>
+          <div class="pill">即时计算</div>
+        </div>
+
+        <div class="asideBox">
+          <p class="hint">
+            结果仅用于自我评估参考。实际投资决策还应结合资产状况、目标、流动性需求以及产品风险等级等因素。
+          </p>
+
+          <div class="result" id="result">
+            <div class="resultGrid">
+              <div class="metric" id="metricPref">
+                <div class="metricTop">
+                  <h3>客户风险偏好</h3>
+                  <span class="badge" id="badgePref">未生成</span>
+                </div>
+                <div class="scoreLine">
+                  <div class="bigScore" id="scorePref">—</div>
+                  <div class="range" id="rangePref">范围：8–31</div>
+                </div>
+                <p id="descPref"></p>
+              </div>
+
+              <div class="metric" id="metricCap">
+                <div class="metricTop">
+                  <h3>客户风险承受能力</h3>
+                  <span class="badge" id="badgeCap">未生成</span>
+                </div>
+                <div class="scoreLine">
+                  <div class="bigScore" id="scoreCap">—</div>
+                  <div class="range" id="rangeCap">范围：10–44</div>
+                </div>
+                <p id="descCap"></p>
+              </div>
+
+              <div class="metric">
+                <div class="metricTop">
+                  <h3>建议提示</h3>
+                  <span class="badge">可操作建议</span>
+                </div>
+                <p id="advice"></p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/** 计分规则：A=1,B=2,C=3,D=4,E=5 */
+const scoreMap = { A: 1, B: 2, C: 3, D: 4, E: 5 };
+
+/** 问卷数据（来自你上传的 PDF 文本转录） */
+const preferenceQuestions = [
+  {
+    id: "pref1",
+    title: "风险投资对你来说：",
+    options: [
+      ["A", "觉得很危险"],
+      ["B", "可以尝试低风险"],
+      ["C", "比较感兴趣"],
+      ["D", "非常感兴趣"],
+    ],
+  },
+  {
+    id: "pref2",
+    title: "你的亲友会以下面哪句话来形容你？",
+    options: [
+      ["A", "从来都不冒险"],
+      ["B", "是一个小心谨慎的人"],
+      ["C", "经仔细考虑，愿意承受风险"],
+      ["D", "喜欢冒风险"],
+    ],
+  },
+  {
+    id: "pref3",
+    title: "假如你参加一项有奖竞赛节目，并已胜出，你希望获得的奖励方案是？",
+    options: [
+      ["A", "立刻拿到 1 万元"],
+      ["B", "有 50% 的机会赢取 5 万元现金的抽奖"],
+      ["C", "有 25% 的机会赢取 10 万元现金的抽奖"],
+      ["D", "有 5% 的机会赢取 100 万元现金的抽奖"],
+    ],
+  },
+  {
+    id: "pref4",
+    title: "因为一些原因，你的驾照在未来三天无法使用，你会：",
+    options: [
+      ["A", "搭朋友的便车，坐出租或公交"],
+      ["B", "白天不开，晚上交警少的时候可能开"],
+      ["C", "小心点开就是了"],
+      ["D", "开玩笑，我一直都是无照驾驶的"],
+    ],
+  },
+  {
+    id: "pref5",
+    title: "有一个很好的投资机会刚出现，但是得借钱，你会选择融资吗？",
+    options: [
+      ["A", "不会"],
+      ["B", "也许"],
+      ["C", "会"],
+    ],
+  },
+  {
+    id: "pref6",
+    title: "刚有足够的储蓄实践自己一直梦寐以求的旅行，但是出发前三个星期，忽然被解雇。你会：",
+    options: [
+      ["A", "取消旅行"],
+      ["B", "选择另一个比较普通的旅行"],
+      ["C", "依照原定的计划，因为你需要充足的休息来准备寻找新的工作"],
+      ["D", "延长路程，因为这次旅行可能是最后一次豪华旅行了"],
+    ],
+  },
+  {
+    id: "pref7",
+    title: "如果投资金额为 50 万元人民币，以下四个投资选择，你个人比较喜欢：",
+    options: [
+      ["A", "最好赚 2 万元（4%），最差无损失"],
+      ["B", "最好赚 8 万元（16%），最差损失 2 万元（4%）"],
+      ["C", "最好赚 26 万元（52%），最差损失 8 万元（16%）"],
+      ["D", "最好赚 48 万元（96%），最差损失 24 万元（48%）"],
+    ],
+  },
+  {
+    id: "pref8",
+    title: "如果你收到了 25 万元的意外财产，你会：",
+    options: [
+      ["A", "存到银行"],
+      ["B", "投资债券或者债券型基金"],
+      ["C", "投资股票或者股票型基金"],
+      ["D", "投入生意中"],
+    ],
+  },
+];
+
+const capacityQuestions = [
+  {
+    id: "cap1",
+    title: "你现在的年龄：",
+    options: [
+      ["A", "60 岁以上"],
+      ["B", "46–60 岁"],
+      ["C", "36–45 岁"],
+      ["D", "26–35 岁"],
+      ["E", "25 岁以下"],
+    ],
+  },
+  {
+    id: "cap2",
+    title: "你的健康状况如何：",
+    options: [
+      ["A", "一直都不是很好，要经常吃药和去医院"],
+      ["B", "有点不好，不过目前还没什么大问题，我担心老了会更恶劣"],
+      ["C", "至少现在还行，不过我家里人有病史"],
+      ["D", "还行，没大毛病"],
+      ["E", "非常好"],
+    ],
+  },
+  {
+    id: "cap3",
+    title: "是否有过投资股票、基金或者债券的经历？",
+    options: [
+      ["A", "没有"],
+      ["B", "有，少于 3 年"],
+      ["C", "有，3–5 年"],
+      ["D", "有，超过 5 年"],
+    ],
+  },
+  {
+    id: "cap4",
+    title: "你目前投资的主要目的是什么？",
+    options: [
+      ["A", "确保资产安全性，同时获得固定收益"],
+      ["B", "希望获得一定增值，同时年回报波动适度"],
+      ["C", "倾向长期成长，较少关心短期回报和波动"],
+      ["D", "只关心长期高回报，能接受短期资产价值波动"],
+    ],
+  },
+  {
+    id: "cap5",
+    title: "你的投资总额占你个人（或家庭）总资产（含房产等）的：",
+    options: [
+      ["A", "低于 10%"],
+      ["B", "10%–25%"],
+      ["C", "25%–40%"],
+      ["D", "40%–55%"],
+      ["E", "55% 以上"],
+    ],
+  },
+  {
+    id: "cap6",
+    title: "你预期的投资期限是：",
+    options: [
+      ["A", "少于 1 年"],
+      ["B", "1–3 年"],
+      ["C", "3–5 年"],
+      ["D", "5–10 年"],
+      ["E", "10 年以上"],
+    ],
+  },
+  {
+    id: "cap7",
+    title: "当你投资 60 天后，价格下跌 20%，假设所有基本面均未改变，你会怎么做？",
+    options: [
+      ["A", "为避免更大的担忧，全部卖掉再试试其他的"],
+      ["B", "卖掉一部分，其余等着看看"],
+      ["C", "什么也不做，静等收回投资"],
+      ["D", "再买入。它曾是好的投资，现在也是便宜的投资"],
+    ],
+  },
+  {
+    id: "cap8",
+    title: "有没有想过如果有一天你的财务状况发生很大的变化（可能动用你 10% 的个人资产甚至更多）：",
+    options: [
+      ["A", "没想过，我感觉这种大变化不会出现在我身上"],
+      ["B", "经常想，我很担心整个生活都将变得一团糟"],
+      ["C", "想过一两次，感觉挺可怕的"],
+      ["D", "想过一两次，但是我还年轻，无所谓的"],
+    ],
+  },
+  {
+    id: "cap9",
+    title: "你对你目前的财务状况还满意吗？",
+    options: [
+      ["A", "不太好，常常要借钱"],
+      ["B", "刚刚好，我要特别小心打理"],
+      ["C", "我做的还行，一直按人生规划顺利进行"],
+      ["D", "特别好，现在想买什么就买什么"],
+    ],
+  },
+  {
+    id: "cap10",
+    title: "当你退休后，你计划做什么？",
+    options: [
+      ["A", "节俭的生活，避免把钱花光"],
+      ["B", "继续工作挣钱，因为我的养老金估计不够用"],
+      ["C", "享受人生，周游世界"],
+      ["D", "努力花钱，直到去见上帝前还要带最奢侈的礼物"],
+    ],
+  },
+];
+
+function el(tag, attrs={}, children=[]) {
+  const node = document.createElement(tag);
+  Object.entries(attrs).forEach(([k,v]) => {
+    if (k === "class") node.className = v;
+    else if (k === "html") node.innerHTML = v;
+    else node.setAttribute(k, v);
+  });
+  (Array.isArray(children) ? children : [children]).forEach(ch => {
+    if (ch == null) return;
+    node.appendChild(typeof ch === "string" ? document.createTextNode(ch) : ch);
+  });
+  return node;
+}
+
+function renderSection(container, title, subtitle, questions) {
+  container.appendChild(
+    el("div", { class: "sectionTitle" }, [
+      el("strong", {}, title),
+      el("span", {}, subtitle),
+    ])
+  );
+
+  questions.forEach((q, idx) => {
+    const qWrap = el("div", { class: "q", "data-qid": q.id });
+
+    const top = el("div", { class: "qTop" }, [
+      el("div", { class: "qNo" }, String(idx + 1)),
+      el("div", {}, [
+        el("div", { class: "qTitle" }, q.title),
+      ])
+    ]);
+
+    const opts = el("div", { class: "opts" });
+    q.options.forEach(([key, text]) => {
+      const inputId = `${q.id}_${key}`;
+      const input = el("input", {
+        type: "radio",
+        name: q.id,
+        value: key,
+        id: inputId,
+      });
+
+      const label = el("label", { class: "opt", for: inputId }, [
+        input,
+        el("span", {}, `${key}. ${text}`),
+        el("small", {}, `+${scoreMap[key] ?? "?"}分`),
+      ]);
+      opts.appendChild(label);
+    });
+
+    qWrap.appendChild(top);
+    qWrap.appendChild(opts);
+    container.appendChild(qWrap);
+  });
+}
+
+const secPref = document.getElementById("secPref");
+const secCap  = document.getElementById("secCap");
+
+renderSection(
+  secPref,
+  "1）客户风险偏好测试（8题）",
+  "用于衡量你对风险/收益权衡的主观偏好",
+  preferenceQuestions
+);
+
+renderSection(
+  secCap,
+  "2）客户风险承受能力测试（10题）",
+  "用于衡量你客观承受波动与回撤的能力",
+  capacityQuestions
+);
+
+const allQuestionIds = [
+  ...preferenceQuestions.map(q => q.id),
+  ...capacityQuestions.map(q => q.id),
+];
+
+const progressText = document.getElementById("progressText");
+const progressBar  = document.getElementById("progressBar");
+
+function updateProgress(){
+  let answered = 0;
+  for (const qid of allQuestionIds){
+    if (document.querySelector(`input[name="${qid}"]:checked`)) answered++;
+  }
+  const total = allQuestionIds.length;
+  progressText.textContent = `已完成 ${answered} / ${total}`;
+  progressBar.style.width = `${Math.round((answered/total)*100)}%`;
+}
+document.addEventListener("change", (e) => {
+  if (e.target && e.target.matches('input[type="radio"]')) updateProgress();
+});
+updateProgress();
+
+function calcScore(questionList){
+  let sum = 0;
+  const missing = [];
+  for (const q of questionList){
+    const picked = document.querySelector(`input[name="${q.id}"]:checked`);
+    if (!picked){
+      missing.push(q.id);
+      continue;
+    }
+    const v = picked.value;
+    sum += (scoreMap[v] ?? 0);
+  }
+  return { sum, missing };
+}
+
+function prefType(score){
+  // 风险偏好类型（最低 8 分，最高 31 分）
+  if (score <= 15) return { label: "风险厌恶型", desc: "更关注本金安全与确定性回报，倾向低波动或保守型资产配置。" };
+  if (score <= 25) return { label: "风险中性", desc: "在风险与收益之间寻求平衡，愿意承担适度波动以换取更高预期收益。" };
+  return { label: "风险偏好型", desc: "更追求较高回报，能接受较大波动与阶段性回撤，倾向进取型资产配置。" };
+}
+
+function capType(score){
+  // 风险承受能力类型（最低 10 分，最高 44 分）
+  if (score <= 15) return { label: "非常保守型", desc: "承受能力偏低，适合以稳健/低回撤产品为主，重点控制风险暴露。" };
+  if (score <= 20) return { label: "温和保守型", desc: "可承受有限波动，适合稳健为主、少量配置中等风险资产的组合。" };
+  if (score <= 30) return { label: "中庸稳健型", desc: "承受能力中等，适合股债均衡或分散组合，追求长期稳健增值。" };
+  if (score <= 38) return { label: "温和进取型", desc: "承受能力较强，可提高权益/成长类资产比重，但仍需分散与止损纪律。" };
+  return { label: "非常进取型", desc: "承受能力很强，可承担较大波动与回撤，适合更高风险、更高弹性配置，但应重视仓位与流动性管理。" };
+}
+
+function makeAdvice(prefLabel, capLabel){
+  // 简单组合建议（你可按业务需要细化）
+  const lines = [];
+
+  if (prefLabel.includes("厌恶") || capLabel.includes("保守")){
+    lines.push("建议以“稳健、低波动”为核心：优先考虑高流动性、回撤控制较强的配置，并拉长评估周期。");
+  } else if (prefLabel.includes("中性") || capLabel.includes("稳健")){
+    lines.push("建议采用“均衡分散”策略：可配置一定比例权益资产，同时通过固收/现金类资产平滑波动。");
+  } else {
+    lines.push("建议以“长期成长”为主：可提高权益/成长型资产比重，但务必分散行业与风格，并设置仓位上限与回撤预案。");
+  }
+
+  lines.push("无论类型如何：建议预留应急资金、关注投资期限匹配，并避免集中押注单一资产。");
+  return lines.join(" ");
+}
+
+function firstMissingToHumanId(qid){
+  // 找到 DOM 中该题标题
+  const wrap = document.querySelector(`[data-qid="${qid}"]`);
+  const title = wrap ? wrap.querySelector(".qTitle")?.textContent?.trim() : qid;
+  return title || qid;
+}
+
+const toast = document.getElementById("toast");
+function showToast(msg){
+  toast.style.display = "block";
+  toast.textContent = msg;
+}
+function hideToast(){
+  toast.style.display = "none";
+  toast.textContent = "";
+}
+
+const resultBox = document.getElementById("result");
+const btnScrollResult = document.getElementById("btnScrollResult");
+
+document.getElementById("quizForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  hideToast();
+
+  const pref = calcScore(preferenceQuestions);
+  const cap  = calcScore(capacityQuestions);
+
+  const missing = [...pref.missing, ...cap.missing];
+  if (missing.length){
+    const first = firstMissingToHumanId(missing[0]);
+    showToast(`还有 ${missing.length} 题未作答。请先完成：${first}`);
+    // 滚动到未答题
+    const target = document.querySelector(`[data-qid="${missing[0]}"]`);
+    if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+
+  const prefRes = prefType(pref.sum);
+  const capRes  = capType(cap.sum);
+
+  // 填充结果
+  document.getElementById("scorePref").textContent = String(pref.sum);
+  document.getElementById("badgePref").textContent = prefRes.label;
+  document.getElementById("descPref").textContent  = prefRes.desc + "（区间：8–15 风险厌恶 / 16–25 风险中性 / 26+ 风险偏好）";
+
+  document.getElementById("scoreCap").textContent = String(cap.sum);
+  document.getElementById("badgeCap").textContent = capRes.label;
+  document.getElementById("descCap").textContent  = capRes.desc + "（区间：10–15 非常保守 / 16–20 温和保守 / 21–30 中庸稳健 / 31–38 温和进取 / 39+ 非常进取）";
+
+  document.getElementById("advice").textContent = makeAdvice(prefRes.label, capRes.label);
+
+  resultBox.style.display = "block";
+  btnScrollResult.style.display = "inline-flex";
+
+  // 结果滚动到可视区（右侧卡片也可直接看到；此处给移动端更友好体验）
+  resultBox.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+document.getElementById("btnReset").addEventListener("click", () => {
+  hideToast();
+  document.getElementById("quizForm").reset();
+  updateProgress();
+  resultBox.style.display = "none";
+  btnScrollResult.style.display = "none";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+btnScrollResult.addEventListener("click", () => {
+  resultBox.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+</script>
+</body>
+</html>
