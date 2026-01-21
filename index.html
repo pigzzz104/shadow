@@ -1,0 +1,1276 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>英语跟读训练（离线）</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #0f1b33;
+      --text: #eaf0ff;
+      --muted: #a7b3cf;
+      --line: rgba(255, 255, 255, .10);
+      --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+      --shadow2: 0 6px 18px rgba(0, 0, 0, .25);
+      --radius: 16px;
+      --radius2: 22px;
+      --accent: #5b8cff;
+      --accent2: #7c5cff;
+      --danger: #ff5b6a;
+      --success: #49d17c;
+      --warn: #ffb74a;
+      --focus: 0 0 0 4px rgba(91, 140, 255, .25);
+      color-scheme: dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f6f7fb;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #58637a;
+        --line: rgba(15, 23, 42, .10);
+        --shadow: 0 10px 24px rgba(15, 23, 42, .10);
+        --shadow2: 0 6px 14px rgba(15, 23, 42, .08);
+        --focus: 0 0 0 4px rgba(91, 140, 255, .22);
+        color-scheme: light;
+      }
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      padding: max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+      background: var(--bg);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -2;
+      background:
+        radial-gradient(1000px 650px at 12% 10%, rgba(124, 92, 255, .20), transparent 60%),
+        radial-gradient(900px 600px at 88% 12%, rgba(91, 140, 255, .18), transparent 58%),
+        radial-gradient(900px 800px at 50% 95%, rgba(0, 0, 0, .22), transparent 55%),
+        linear-gradient(180deg, rgba(255, 255, 255, .02) 0%, rgba(0, 0, 0, .00) 40%, rgba(0, 0, 0, .10) 100%);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      opacity: .08;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+      background-size: 220px 220px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .02));
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-inner {
+      padding: 14px;
+    }
+
+    header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 14px 6px;
+    }
+
+    .title {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(18px, 2.2vw, 24px);
+      letter-spacing: .2px;
+      line-height: 1.15;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.4;
+      max-width: 68ch;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .02));
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, .05);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-size: 14px;
+      line-height: 1;
+      cursor: pointer;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: var(--shadow2);
+      transition: transform .06s ease, background .18s ease, border-color .18s ease, opacity .18s ease;
+      user-select: none;
+      min-width: 0;
+      height: 48px;
+      box-sizing: border-box;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, .08);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn:focus {
+      outline: none;
+      box-shadow: var(--shadow2), var(--focus);
+    }
+
+    .btn[disabled] {
+      opacity: .5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn.primary {
+      border-color: rgba(91, 140, 255, .35);
+      background: linear-gradient(135deg, rgba(91, 140, 255, .95), rgba(124, 92, 255, .95));
+      color: white;
+    }
+
+    .btn.primary:hover {
+      background: linear-gradient(135deg, rgba(91, 140, 255, 1), rgba(124, 92, 255, 1));
+    }
+
+    .btn.danger {
+      border-color: rgba(255, 91, 105, 0.463);
+      background: rgba(255, 91, 105, 0.573);
+      color: #ffffff;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .toolbar>* {
+      min-width: 0;
+    }
+
+    .toolbar .spacer {
+      flex: 1 1 auto;
+    }
+
+    .file {
+      position: relative;
+      flex: 1 1 280px;
+      min-width: 220px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      align-items: center;
+    }
+
+    .file-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .file-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 14px;
+      min-height: 44px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, .05);
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+      box-shadow: var(--shadow2);
+      transition: transform .06s ease, background .18s ease, border-color .18s ease;
+      white-space: nowrap;
+      height: 48px;
+      box-sizing: border-box;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .file-btn:hover {
+      background: rgba(255, 255, 255, .08);
+    }
+
+    .file-btn:active {
+      transform: translateY(1px);
+    }
+
+    .file-btn:focus {
+      outline: none;
+      box-shadow: var(--shadow2), var(--focus);
+    }
+
+    .file-name {
+      height: 48px;
+      flex: 1 1 auto;
+      min-width: 0;
+      padding: 0 14px;
+      min-height: 48px;
+      border-radius: 14px;
+      border: 1px dashed var(--line);
+      background: rgba(255, 255, 255, .03);
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      position: relative;
+      justify-content: center;
+      text-align: center;
+      line-height: 1;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .status {
+      font-size: 12px;
+      color: var(--muted);
+      padding: 8px 0 0;
+      min-height: 18px;
+    }
+
+    .status.ok {
+      color: var(--success);
+    }
+
+    .status.warn {
+      color: var(--warn);
+    }
+
+    .status.err {
+      color: var(--danger);
+    }
+
+    .audio {
+      width: 100%;
+      margin-top: 10px;
+      border-radius: 12px;
+    }
+
+    details {
+      border-top: 1px solid var(--line);
+      padding: 10px 14px;
+      background: rgba(0, 0, 0, .06);
+    }
+
+    @media (prefers-color-scheme: light) {
+      details {
+        background: rgba(15, 23, 42, .03);
+      }
+    }
+
+    summary {
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 13px;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .settings {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    @media (min-width: 680px) {
+      .settings {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .03);
+      min-width: 0;
+    }
+
+    .field label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .field input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 10px;
+      font-size: 14px;
+      background: rgba(255, 255, 255, .04);
+      color: var(--text);
+      min-height: 40px;
+      box-sizing: border-box;
+    }
+
+    .field input:focus {
+      outline: none;
+      box-shadow: var(--focus);
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      opacity: .9;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    @media (min-width: 900px) {
+      .grid {
+        grid-template-columns: 1.35fr .65fr;
+      }
+    }
+
+    .kpis {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .segments {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      min-width: 0;
+    }
+
+    .seg {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .03);
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .seg.recording {
+      border-color: rgba(255, 183, 74, .45);
+      box-shadow: 0 0 0 3px rgba(255, 183, 74, .14), var(--shadow2);
+    }
+
+    .seg-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+
+    .seg-title {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .seg-title b {
+      font-size: 14px;
+    }
+
+    .seg-title .meta {
+      color: var(--muted);
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+      min-width: 0;
+    }
+
+    .actions .btn {
+      min-height: 40px;
+      padding: 10px 12px;
+      height: auto;
+    }
+
+    .seg-audios {
+      display: grid;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    @media (min-width: 900px) {
+      .seg-audios {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .small-note {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 720px) {
+      .sticky {
+        position: static !important;
+      }
+
+      header {
+        padding-bottom: 10px;
+      }
+
+      .toolbar {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar .spacer {
+        display: none;
+      }
+
+      .file {
+        min-width: 0;
+      }
+
+      .pill {
+        white-space: normal;
+      }
+    }
+
+    @media (min-width: 721px) {
+      .sticky {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        isolation: isolate;
+        backdrop-filter: blur(10px);
+        background: rgba(15, 23, 42, .55);
+      }
+
+      @media (prefers-color-scheme: light) {
+        .sticky {
+          background: rgba(246, 247, 251, .70);
+        }
+      }
+    }
+
+    .icon {
+      width: 18px;
+      height: 18px;
+      display: inline-block;
+      flex: 0 0 auto;
+    }
+
+    .icon svg {
+      width: 18px;
+      height: 18px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="card sticky">
+      <header>
+        <div class="title">
+          <h1>英语跟读训练（离线）</h1>
+          <div class="subtitle">
+            上传音频 → 自动按静音切分 → 左侧原句为真正片段文件（WAV）→ 逐句录音与回放。
+          </div>
+        </div>
+        <div class="pill" title="录音不限制时长">🎙️ 录音由你手动停止</div>
+      </header>
+
+      <div class="card-inner">
+        <div class="toolbar">
+          <div class="file">
+            <input id="file" class="file-input" type="file" accept="audio/*" />
+            <label for="file" class="file-btn">
+              <span class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+              </span>
+              选择音频
+            </label>
+
+            <div id="fileName" class="file-name">未选择文件</div>
+          </div>
+          <button id="analyze" class="btn primary" disabled>
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M21 21H3" />
+                <path d="M7 17V9" />
+                <path d="M12 17V5" />
+                <path d="M17 17v-7" />
+              </svg>
+            </span>
+            分析并切分
+          </button>
+          <button id="stopAll" class="btn" disabled>
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <rect x="7" y="7" width="10" height="10" rx="2" />
+              </svg>
+            </span>
+            停止
+          </button>
+          <div class="spacer"></div>
+          <span class="pill">🎧 片段数 <b id="segCount">0</b></span>
+        </div>
+
+        <div id="status" class="status"></div>
+        <audio id="fullAudio" class="audio" controls></audio>
+      </div>
+
+      <details>
+        <summary>
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M12 1v2" />
+              <path d="M12 21v2" />
+              <path d="M4.22 4.22l1.42 1.42" />
+              <path d="M18.36 18.36l1.42 1.42" />
+              <path d="M1 12h2" />
+              <path d="M21 12h2" />
+              <path d="M4.22 19.78l1.42-1.42" />
+              <path d="M18.36 5.64l1.42-1.42" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </span>
+          切分参数（不准就调这里）
+        </summary>
+        <div class="settings">
+          <div class="field">
+            <label for="silenceDb">静音阈值（dB）</label>
+            <input id="silenceDb" type="number" step="1" value="-35" />
+            <div class="hint">更负 = 更容易判静音（建议 -45 ~ -25）</div>
+          </div>
+          <div class="field">
+            <label for="minSilenceMs">最短静音时长（ms）</label>
+            <input id="minSilenceMs" type="number" step="50" value="350" />
+            <div class="hint">建议 250 ~ 600</div>
+          </div>
+          <div class="field">
+            <label for="minSegMs">最短片段时长（ms）</label>
+            <input id="minSegMs" type="number" step="50" value="650" />
+            <div class="hint">建议 400 ~ 1200</div>
+          </div>
+          <div class="field">
+            <label for="padMs">句首/句尾缓冲（ms）</label>
+            <input id="padMs" type="number" step="10" value="120" />
+            <div class="hint">建议 80 ~ 200</div>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-inner">
+          <div class="kpis">
+            <span class="pill">录音格式：<b id="recMime">自动</b></span>
+            <span id="micState" class="pill">🎙️ 未请求麦克风</span>
+            <div class="small-note">提示：录音手动停止保存。</div>
+          </div>
+        </div>
+        <div id="segments" class="segments"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-inner">
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <div style="font-weight:600;">使用小贴士</div>
+            <div class="small-note">• 切分过碎：提高最短静音 / 提高最短片段</div>
+            <div class="small-note">• 句子被合并：降低最短静音 / 调高静音阈值（更接近 0）</div>
+            <div class="small-note">• 环境噪声大：把静音阈值调得更接近 0（例如 -28）</div>
+            <div class="small-note">• 左侧原句是片段WAV：首次播放会生成，可能有轻微延迟</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const $ = (id) => document.getElementById(id);
+      const fmtTime = (sec) => {
+        const s = Math.max(0, sec);
+        const m = Math.floor(s / 60);
+        const r = s - m * 60;
+        return `${String(m).padStart(2, '0')}:${r.toFixed(2).padStart(5, '0')}`;
+      };
+      const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+      let fileBlob = null;
+      let fileUrl = null;
+
+      let audioCtx = null;
+      let decodedBuffer = null;
+      let segments = [];
+
+      // ✅ 原句片段（真正文件）缓存
+      const segOrigBlobs = new Map(); // idx -> Blob
+      const segOrigUrls = new Map();  // idx -> ObjectURL
+
+      let mediaStream = null;
+      let mediaRecorder = null;
+      let recChunks = [];
+      let recTargetIdx = -1;
+
+      const recBlobs = new Map(); // idx -> Blob
+      const recUrls = new Map();  // idx -> ObjectURL
+
+      const fileInput = $("file");
+      const analyzeBtn = $("analyze");
+      const stopAllBtn = $("stopAll");
+      const fullAudio = $("fullAudio");
+      const segCountEl = $("segCount");
+      const segmentsEl = $("segments");
+      const micStateEl = $("micState");
+      const recMimeEl = $("recMime");
+      const statusEl = $("status");
+
+      const setStatus = (msg, kind = "") => {
+        statusEl.className = `status ${kind}`.trim();
+        statusEl.textContent = msg || "";
+      };
+
+      const setMicPill = (text, kind = "") => {
+        micStateEl.textContent = text;
+        micStateEl.style.borderColor =
+          kind === "ok" ? "rgba(73,209,124,.35)" :
+            kind === "warn" ? "rgba(255,183,74,.35)" :
+              kind === "err" ? "rgba(255,91,106,.35)" :
+                "var(--line)";
+        micStateEl.style.color =
+          kind === "ok" ? "var(--success)" :
+            kind === "warn" ? "var(--warn)" :
+              kind === "err" ? "var(--danger)" :
+                "var(--muted)";
+      };
+
+      fileInput.addEventListener("change", async (e) => {
+        cleanupAll();
+        const f = e.target.files?.[0];
+        if (!f) return;
+
+        const fileNameEl = $("fileName");
+        if (fileNameEl) fileNameEl.textContent = f.name;
+
+        fileBlob = f;
+        fileUrl = URL.createObjectURL(f);
+        fullAudio.src = fileUrl;
+
+        analyzeBtn.disabled = false;
+        stopAllBtn.disabled = false;
+        setStatus(`已选择：${f.name}（${(f.size / 1024 / 1024).toFixed(2)} MB）`);
+      });
+
+      stopAllBtn.addEventListener("click", stopAll);
+
+      analyzeBtn.addEventListener("click", async () => {
+        if (!fileBlob) return;
+        analyzeBtn.disabled = true;
+
+        try {
+          setStatus("正在解码音频...");
+          audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+          const arr = await fileBlob.arrayBuffer();
+          decodedBuffer = await audioCtx.decodeAudioData(arr.slice(0));
+
+          setStatus("正在按静音切分...");
+          segments = segmentBySilence(decodedBuffer, {
+            silenceDb: Number($("silenceDb").value),
+            minSilenceMs: Number($("minSilenceMs").value),
+            minSegMs: Number($("minSegMs").value),
+            padMs: Number($("padMs").value),
+          });
+
+          segCountEl.textContent = String(segments.length);
+          renderSegments();
+
+          if (segments.length === 0) setStatus("未检测到有效片段：请降低静音阈值（更负），或降低最短静音时长。", "warn");
+          else setStatus(`切分完成：${segments.length} 段。左侧原句会在首次播放时生成片段WAV。`, "ok");
+        } catch (e) {
+          console.error(e);
+          setStatus("解析失败：该音频格式可能不被当前浏览器支持，或文件损坏。", "err");
+        } finally {
+          analyzeBtn.disabled = false;
+        }
+      });
+
+      function segmentBySilence(audioBuffer, opts) {
+        const { silenceDb = -35, minSilenceMs = 350, minSegMs = 650, padMs = 120 } = opts;
+
+        const sr = audioBuffer.sampleRate;
+        const ch0 = audioBuffer.getChannelData(0);
+        const ch1 = audioBuffer.numberOfChannels > 1 ? audioBuffer.getChannelData(1) : null;
+
+        const frameMs = 20, hopMs = 10;
+        const frameSize = Math.max(1, Math.floor(sr * frameMs / 1000));
+        const hopSize = Math.max(1, Math.floor(sr * hopMs / 1000));
+
+        const thr = Math.pow(10, silenceDb / 20);
+        const minSilenceFrames = Math.ceil(minSilenceMs / hopMs);
+        const minSegFrames = Math.ceil(minSegMs / hopMs);
+        const padFrames = Math.ceil(padMs / hopMs);
+
+        const voiced = [];
+        for (let i = 0; i + frameSize < ch0.length; i += hopSize) {
+          let sum = 0;
+          for (let j = 0; j < frameSize; j++) {
+            const a = ch0[i + j];
+            const b = ch1 ? ch1[i + j] : 0;
+            const x = ch1 ? (a + b) * 0.5 : a;
+            sum += x * x;
+          }
+          voiced.push(Math.sqrt(sum / frameSize) >= thr);
+        }
+
+        for (let k = 1; k < voiced.length - 1; k++) {
+          if (!voiced[k] && voiced[k - 1] && voiced[k + 1]) voiced[k] = true;
+        }
+
+        const segs = [];
+        let inSeg = false, segStart = 0, silenceRun = 0;
+
+        const finalize = (endFrameExclusive) => {
+          const startF = clamp(segStart - padFrames, 0, voiced.length - 1);
+          const endF = clamp(endFrameExclusive + padFrames, 0, voiced.length);
+          const durFrames = endF - startF;
+
+          if (durFrames >= minSegFrames) {
+            const startSec = (startF * hopSize) / sr;
+            const endSec = (endF * hopSize) / sr;
+            if (endSec - startSec > 0.05) segs.push({ start: startSec, end: Math.min(endSec, audioBuffer.duration) });
+          }
+        };
+
+        for (let i = 0; i < voiced.length; i++) {
+          if (!inSeg) {
+            if (voiced[i]) { inSeg = true; segStart = i; silenceRun = 0; }
+          } else {
+            if (voiced[i]) silenceRun = 0;
+            else {
+              silenceRun++;
+              if (silenceRun >= minSilenceFrames) {
+                finalize(i - silenceRun + 1);
+                inSeg = false;
+                silenceRun = 0;
+              }
+            }
+          }
+        }
+        if (inSeg) finalize(voiced.length);
+
+        const merged = [];
+        const mergeGapSec = 0.18;
+        for (const s of segs) {
+          const last = merged[merged.length - 1];
+          if (last && s.start - last.end < mergeGapSec) last.end = s.end;
+          else merged.push({ ...s });
+        }
+        return merged;
+      }
+
+      function renderSegments() {
+        segmentsEl.innerHTML = segments.map((seg, idx) => {
+          const dur = (seg.end - seg.start).toFixed(2);
+          const meta = `${fmtTime(seg.start)} → ${fmtTime(seg.end)}（${dur}s）`;
+          return `
+            <div class="seg" data-idx="${idx}">
+              <div class="seg-head">
+                <div class="seg-title">
+                  <b>句子 ${idx + 1}</b>
+                  <div class="meta">${meta}</div>
+                </div>
+                <div class="actions">
+                  <button class="btn" data-action="play-orig">
+                    <span class="icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                    </span>原句
+                  </button>
+                  <button class="btn primary" data-action="rec">
+                    <span class="icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z"/>
+                        <path d="M19 11a7 7 0 0 1-14 0"/><path d="M12 18v3"/>
+                      </svg>
+                    </span>录音
+                  </button>
+                  <button class="btn" data-action="stop-rec" disabled>
+                    <span class="icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
+                    </span>停止
+                  </button>
+                  <button class="btn" data-action="play-rec" disabled>
+                    <span class="icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                    </span>回放
+                  </button>
+                  <button class="btn danger" data-action="rerec" disabled>
+                    <span class="icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/>
+                      </svg>
+                    </span>重录
+                  </button>
+                </div>
+              </div>
+
+              <div class="seg-audios">
+                <!-- ✅ 真正片段文件：首次播放时生成 WAV Blob -->
+                <audio controls preload="none"
+                  title="原句片段（真正片段WAV）"
+                  data-kind="orig-ui"
+                  data-idx="${idx}"></audio>
+
+                <audio controls preload="none" title="我的录音" data-kind="my"></audio>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        bindOrigPlayers();   // ✅ 绑定：播放前确保生成片段
+        syncRecordingUI();
+      }
+
+      // ========== ✅ 真正片段文件：裁剪 + 导出 WAV ==========
+      function ensureOrigSegmentUrl(idx) {
+        if (segOrigUrls.has(idx)) return segOrigUrls.get(idx);
+        if (!decodedBuffer) return null;
+        const seg = segments[idx];
+        if (!seg) return null;
+
+        const blob = exportSegmentToWav(decodedBuffer, seg.start, seg.end, {
+          // 为了体积小/兼容强：导出单声道 16-bit PCM WAV
+          mono: true
+        });
+
+        segOrigBlobs.set(idx, blob);
+        const url = URL.createObjectURL(blob);
+        segOrigUrls.set(idx, url);
+        return url;
+      }
+
+      function exportSegmentToWav(buffer, startSec, endSec, { mono = true } = {}) {
+        const sr = buffer.sampleRate;
+        const start = clamp(Math.floor(startSec * sr), 0, buffer.length);
+        const end = clamp(Math.ceil(endSec * sr), 0, buffer.length);
+        const frames = Math.max(0, end - start);
+
+        const chN = buffer.numberOfChannels;
+        const channels = [];
+
+        if (mono) {
+          // 平均成单声道
+          const out = new Float32Array(frames);
+          for (let c = 0; c < chN; c++) {
+            const src = buffer.getChannelData(c);
+            for (let i = 0; i < frames; i++) out[i] += src[start + i] / chN;
+          }
+          channels.push(out);
+        } else {
+          for (let c = 0; c < chN; c++) {
+            const src = buffer.getChannelData(c).slice(start, end);
+            channels.push(src);
+          }
+        }
+
+        return floatTo16BitWavBlob(channels, sr);
+      }
+
+      function floatTo16BitWavBlob(channels, sampleRate) {
+        const numChannels = channels.length;
+        const numFrames = channels[0]?.length || 0;
+        const bytesPerSample = 2; // 16-bit
+        const blockAlign = numChannels * bytesPerSample;
+        const byteRate = sampleRate * blockAlign;
+        const dataSize = numFrames * blockAlign;
+
+        const buffer = new ArrayBuffer(44 + dataSize);
+        const view = new DataView(buffer);
+
+        // RIFF header
+        writeAscii(view, 0, "RIFF");
+        view.setUint32(4, 36 + dataSize, true);
+        writeAscii(view, 8, "WAVE");
+
+        // fmt chunk
+        writeAscii(view, 12, "fmt ");
+        view.setUint32(16, 16, true);          // PCM chunk size
+        view.setUint16(20, 1, true);           // PCM format
+        view.setUint16(22, numChannels, true);
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, byteRate, true);
+        view.setUint16(32, blockAlign, true);
+        view.setUint16(34, 16, true);          // bits per sample
+
+        // data chunk
+        writeAscii(view, 36, "data");
+        view.setUint32(40, dataSize, true);
+
+        // Interleave samples
+        let offset = 44;
+        for (let i = 0; i < numFrames; i++) {
+          for (let c = 0; c < numChannels; c++) {
+            let s = channels[c][i] || 0;
+            s = Math.max(-1, Math.min(1, s));
+            const int16 = s < 0 ? s * 0x8000 : s * 0x7FFF;
+            view.setInt16(offset, int16, true);
+            offset += 2;
+          }
+        }
+
+        return new Blob([buffer], { type: "audio/wav" });
+      }
+
+      function writeAscii(view, offset, str) {
+        for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+      }
+      // ========== ✅ 真正片段文件：裁剪 + 导出 WAV 结束 ==========
+
+      // 绑定左侧原句播放器：用户手动点播放也能自动生成片段
+      function bindOrigPlayers() {
+        document.querySelectorAll('audio[data-kind="orig-ui"]').forEach(a => {
+          a.onplay = null;
+          a.onplay = () => {
+            const idx = Number(a.dataset.idx);
+            stopAllPlayback(a);
+
+            if (!a.src) {
+              const url = ensureOrigSegmentUrl(idx);
+              if (url) {
+                a.src = url;
+                a.load();
+              }
+            }
+
+            // 如果还没 ready，尽量从头开始
+            try { if (a.currentTime > 0.001) a.currentTime = 0; } catch { }
+            setStatus(`播放原句（片段文件）：句子 ${idx + 1}`, "ok");
+          };
+        });
+      }
+
+      segmentsEl.addEventListener("click", (e) => {
+        const btn = e.target.closest("button[data-action]");
+        if (!btn) return;
+        const segEl = e.target.closest(".seg");
+        if (!segEl) return;
+        const idx = Number(segEl.dataset.idx);
+        const action = btn.dataset.action;
+
+        if (action === "play-orig") playOriginalSegment(idx);
+        else if (action === "rec") startRecording(idx);
+        else if (action === "stop-rec") stopRecording();
+        else if (action === "play-rec") playMyRecording(idx);
+        else if (action === "rerec") rerecord(idx);
+      });
+
+      function stopAll() {
+        stopAllPlayback();
+        if (mediaRecorder && mediaRecorder.state === "recording") stopRecording();
+      }
+
+      function stopAllPlayback(keepAudio = null) {
+        try { fullAudio.pause(); } catch { }
+        document.querySelectorAll("audio").forEach(a => {
+          try {
+            if (keepAudio && a === keepAudio) return;
+            a.pause();
+          } catch { }
+        });
+      }
+
+      // ✅ “原句”按钮：确保片段已生成并播放左侧播放器
+      function playOriginalSegment(idx) {
+        if (!decodedBuffer) return;
+        const el = document.querySelector(`.seg[data-idx="${idx}"]`);
+        const a = el?.querySelector('audio[data-kind="orig-ui"]');
+        if (!a) return;
+
+        const url = ensureOrigSegmentUrl(idx);
+        if (!url) return;
+
+        if (a.src !== url) {
+          a.src = url;
+          a.load();
+        }
+
+        stopAllPlayback(a);
+        a.currentTime = 0;
+        a.play().catch(() => { });
+      }
+
+      async function ensureMic() {
+        if (!navigator.mediaDevices?.getUserMedia) throw new Error("getUserMedia not supported");
+        if (!window.MediaRecorder) throw new Error("MediaRecorder not supported");
+
+        if (mediaStream) return mediaStream;
+        mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        setMicPill("麦克风已就绪", "ok");
+        return mediaStream;
+      }
+
+      function pickBestMime() {
+        const candidates = [
+          "audio/webm;codecs=opus",
+          "audio/webm",
+          "audio/ogg;codecs=opus",
+          "audio/ogg",
+        ];
+        for (const m of candidates) {
+          if (MediaRecorder.isTypeSupported(m)) return m;
+        }
+        return "";
+      }
+
+      function syncRecordingUI() {
+        document.querySelectorAll(".seg").forEach((el) => {
+          const idx = Number(el.dataset.idx);
+          const isActive = (mediaRecorder && mediaRecorder.state === "recording" && recTargetIdx === idx);
+
+          el.classList.toggle("recording", !!isActive);
+
+          const btnRec = el.querySelector('button[data-action="rec"]');
+          const btnStop = el.querySelector('button[data-action="stop-rec"]');
+          const btnPlayRec = el.querySelector('button[data-action="play-rec"]');
+          const btnRerec = el.querySelector('button[data-action="rerec"]');
+
+          const hasRec = recBlobs.has(idx);
+
+          btnRec.disabled = !!(mediaRecorder && mediaRecorder.state === "recording");
+          btnStop.disabled = !isActive;
+
+          btnPlayRec.disabled = !hasRec;
+          btnRerec.disabled = !hasRec;
+        });
+      }
+
+      async function startRecording(idx) {
+        if (mediaRecorder && mediaRecorder.state === "recording") return;
+
+        stopAllPlayback();
+
+        try {
+          await ensureMic();
+        } catch (e) {
+          console.error(e);
+          setMicPill("❌ 录音不可用", "err");
+          setStatus("当前浏览器不支持录音或未获权限（建议用 Chrome/Edge/Safari 最新版）。", "warn");
+          return;
+        }
+
+        const mimeType = pickBestMime();
+        recMimeEl.textContent = mimeType || "浏览器默认";
+
+        recChunks = [];
+        recTargetIdx = idx;
+
+        mediaRecorder = new MediaRecorder(mediaStream, mimeType ? { mimeType } : undefined);
+        mediaRecorder.ondataavailable = (ev) => {
+          if (ev.data && ev.data.size > 0) recChunks.push(ev.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(recChunks, { type: mediaRecorder.mimeType || "audio/webm" });
+          recBlobs.set(recTargetIdx, blob);
+
+          revokeRecUrl(recTargetIdx);
+          const url = URL.createObjectURL(blob);
+          recUrls.set(recTargetIdx, url);
+
+          const el = document.querySelector(`.seg[data-idx="${recTargetIdx}"]`);
+          if (el) {
+            const myAudio = el.querySelector('audio[data-kind="my"]');
+            if (myAudio) { myAudio.src = url; myAudio.currentTime = 0; myAudio.load(); }
+          }
+
+          setMicPill(`已保存：句子 ${recTargetIdx + 1}`, "ok");
+          setStatus("", "");
+          syncRecordingUI();
+        };
+
+        mediaRecorder.start();
+        setMicPill(`⏺️ 录音中：句子 ${idx + 1}`, "warn");
+        setStatus("录音进行中…点击该句的“停止”保存。");
+        syncRecordingUI();
+      }
+
+      function stopRecording() {
+        if (mediaRecorder && mediaRecorder.state === "recording") {
+          mediaRecorder.stop();
+        }
+      }
+
+      function playMyRecording(idx) {
+        stopAllPlayback();
+        const blob = recBlobs.get(idx);
+        if (!blob) return;
+
+        const el = document.querySelector(`.seg[data-idx="${idx}"]`);
+        const myAudio = el?.querySelector('audio[data-kind="my"]');
+        const url = recUrls.get(idx);
+
+        if (myAudio && url) {
+          if (myAudio.src !== url) myAudio.src = url;
+          myAudio.currentTime = 0;
+          myAudio.play().catch(() => { });
+        }
+      }
+
+      function rerecord(idx) {
+        if (mediaRecorder && mediaRecorder.state === "recording") return;
+        revokeRecUrl(idx);
+        recUrls.delete(idx);
+        recBlobs.delete(idx);
+
+        const el = document.querySelector(`.seg[data-idx="${idx}"]`);
+        const myAudio = el?.querySelector('audio[data-kind="my"]');
+        if (myAudio) { myAudio.removeAttribute("src"); myAudio.load(); }
+
+        syncRecordingUI();
+        startRecording(idx);
+      }
+
+      function revokeRecUrl(idx) {
+        const url = recUrls.get(idx);
+        if (url) URL.revokeObjectURL(url);
+      }
+
+      // ✅ 清理片段原句URL
+      function revokeOrigUrl(idx) {
+        const url = segOrigUrls.get(idx);
+        if (url) URL.revokeObjectURL(url);
+      }
+
+      function cleanupAll() {
+        stopAllPlayback();
+
+        if (fileUrl) URL.revokeObjectURL(fileUrl);
+        fileUrl = null;
+        fileBlob = null;
+
+        // 清理原句片段
+        segOrigUrls.forEach((url) => URL.revokeObjectURL(url));
+        segOrigUrls.clear();
+        segOrigBlobs.clear();
+
+        // 清理录音
+        recUrls.forEach((url) => URL.revokeObjectURL(url));
+        recUrls.clear();
+        recBlobs.clear();
+
+        fullAudio.removeAttribute("src");
+        fullAudio.load();
+
+        segments = [];
+        decodedBuffer = null;
+        segCountEl.textContent = "0";
+        segmentsEl.innerHTML = "";
+        setStatus("");
+        const fileNameEl = $("fileName");
+        if (fileNameEl) fileNameEl.textContent = "未选择文件";
+
+        try { if (mediaRecorder && mediaRecorder.state === "recording") mediaRecorder.stop(); } catch { }
+        mediaRecorder = null;
+
+        if (mediaStream) {
+          mediaStream.getTracks().forEach(t => t.stop());
+          mediaStream = null;
+        }
+        setMicPill("🎙️ 未请求麦克风");
+      }
+    })();
+  </script>
+</body>
+
+</html>
